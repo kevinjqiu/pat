@@ -16,7 +16,7 @@ const EnvVarTestFilePathsB64 = "TEST_FILE_PATHS_B64"
 
 func collectTestFiles(globPatterns []string) ([]string, error) {
 	if len(globPatterns) == 0 {
-		return filepath.Glob("*.test")
+		return filepath.Glob("test_*.yaml")
 	}
 
 	var (
