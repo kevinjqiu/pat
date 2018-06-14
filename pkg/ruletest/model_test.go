@@ -4,6 +4,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"time"
 )
 
 func TestNewPromRuleTestFromFile(t *testing.T) {
@@ -89,4 +90,20 @@ load 1m
 load 5m
     http_errors{job="app-server", instance="0", group="canary", severity="overwrite-me"}	75
     http_errors{job="app-server", instance="1", group="canary", severity="overwrite-me"}	75`, instructions)
+}
+
+func TestInstantToDuration(t *testing.T) {
+	instant := Instant("5m")
+	d, err := instant.ToDuration()
+	assert.Nil(t, err)
+	assert.Equal(t, 5 * time.Minute, d)
+
+	instant = Instant("2h")
+	d, err = instant.ToDuration()
+	assert.Nil(t, err)
+	assert.Equal(t, 2 * time.Hour, d)
+
+	instant = Instant("ab")
+	_, err = instant.ToDuration()
+	assert.NotNil(t, err)
 }
