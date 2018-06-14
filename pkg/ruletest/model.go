@@ -82,6 +82,13 @@ func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
 }
 
 type Instant string
+func (i Instant) ToDuration() (time.Duration, error) {
+	duration, err := time.ParseDuration(string(i))
+	if err != nil {
+		return duration, err
+	}
+	return duration, nil
+}
 
 type Duration string
 
@@ -138,6 +145,31 @@ func (prt PromRuleTest) Run() error {
 	suite, err := prt.Fixtures.Load()
 	if err != nil {
 		return err
+	}
+
+	grps, err := prt.Rules.Load()
+	if err != nil {
+		return err
+	}
+
+	baseTime := time.Unix(0, 0)
+	for _, assertion := range prt.Assertions {
+		duration, err := assertion.At.ToDuration()
+		if err != nil {
+			return err
+		}
+		evalTime := baseTime.Add(duration)
+		for _, grp := range grps {
+			for _, rule := range grp.Rules() {
+				res, err := rule.Eval(suite.Context(), evalTime, rules.EngineQueryFunc(suite.QueryEngine(), suite.Storage()), nil)
+				if err != nil {
+					return err
+				}
+				// TODO: parse results
+				fmt.Print(res)
+				fmt.Println(err)
+			}
+		}
 	}
 	fmt.Println(suite)
 	return nil
