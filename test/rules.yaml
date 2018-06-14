@@ -1,0 +1,43 @@
+groups:
+  - name: prometheus.rules
+    rules:
+      - alert: HTTPRequestRateLow
+        expr: http_requests{group="canary", job="app-server"} < 100
+        for: 1m
+        labels:
+          severity: critical
+#      - alert: PrometheusConfigReloadFailed
+#        expr: prometheus_config_last_reload_successful == 0
+#        for: 10m
+#        labels:
+#          severity: warning
+#          annotations:
+#          description: "Reloading Prometheus' configuration has failed for {{$labels.namespace}}/{{$labels.pod}}"
+#      - alert: PrometheusNotificationQueueRunningFull
+#        expr: predict_linear(prometheus_notifications_queue_length[5m], 60 * 30) > prometheus_notifications_queue_capacity
+#        for: 10m
+#        labels:
+#          severity: warning
+#          annotations:
+#          description: "Prometheus' alert notification queue is running full for {{$labels.namespace}}/{{ $labels.pod}}"
+#      - alert: PrometheusErrorSendingAlerts
+#        expr: rate(prometheus_notifications_errors_total[5m]) / rate(prometheus_notifications_sent_total[5m]) > 0.01
+#        for: 10m
+#        labels:
+#          severity: warning
+#          annotations:
+#          description: Errors while sending alerts from Prometheus {{$labels.namespace}}/{{ $labels.pod}} to Alertmanager {{$labels.Alertmanager}}
+#      - alert: PrometheusErrorSendingAlerts
+#        expr: rate(prometheus_notifications_errors_total[5m]) / rate(prometheus_notifications_sent_total[5m]) > 0.03
+#        for: 10m
+#        labels:
+#          severity: critical
+#          annotations:
+#          description: Errors while sending alerts from Prometheus {{$labels.namespace}}/{{ $labels.pod}} to Alertmanager {{$labels.Alertmanager}}
+#      - alert: PrometheusNotConnectedToAlertmanagers
+#        expr: prometheus_notifications_alertmanagers_discovered < 1
+#        for: 10m
+#        labels:
+#          severity: warning
+#          annotations:
+#          description: Prometheus {{ $labels.namespace }}/{{ $labels.pod}} is not connected to any Alertmanagers
