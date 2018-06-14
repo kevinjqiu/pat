@@ -10,7 +10,17 @@ import (
 	"github.com/prometheus/prometheus/pkg/labels"
 	"fmt"
 	"strings"
+	"log"
 )
+
+type StubTestCase struct{}
+
+func (stc StubTestCase) Fatal(args ...interface{}) {
+	log.Fatal(args)
+}
+func (stc StubTestCase) Fatalf(format string, args ...interface{}) {
+	log.Fatalf(format, args)
+}
 
 type RuleLoader struct {
 	FromFile    string `yaml:"fromFile,omitempty"`
@@ -77,21 +87,25 @@ type Duration string
 
 type Metric string
 
-type MetricFixtures map[Duration][]Metric
+type DurationMetrics struct {
+	Duration Duration `yaml:"duration"`
+	Metrics  []Metric `yaml:"metrics"`
+}
+
+type MetricFixtures []DurationMetrics
 
 func (mf MetricFixtures) generatePromQLTestInstructions() (string, error) {
 	instructions := []string{}
 	instructions = append(instructions,"clear")
 
-	for key := range mf {
-		metrics, _ := mf[key]
-		instructions = append(instructions, fmt.Sprintf("load %s", key))
-		for _, metric := range metrics {
+	for _, fixtures := range mf {
+		instructions = append(instructions, fmt.Sprintf("load %s", fixtures.Duration))
+		for _, metric := range fixtures.Metrics {
 			instructions = append(instructions, fmt.Sprintf("    %s", metric))
 		}
 	}
 
-	return strings.Join(instructions, ""), nil
+	return strings.Join(instructions, "\n"), nil
 }
 
 func (mf MetricFixtures) Load() (*promql.Test, error) {
@@ -100,8 +114,11 @@ func (mf MetricFixtures) Load() (*promql.Test, error) {
 		return nil, err
 	}
 
-	fmt.Println(instructions)
-	return nil, nil
+	suite, err := promql.NewTest(StubTestCase{}, instructions)
+	if err != nil {
+		return nil, err
+	}
+	return suite, nil
 }
 
 type Assertion struct {
@@ -148,4 +165,3 @@ func FromString(fileContent []byte) (PromRuleTest, error) {
 	}
 	return promRuleTest, nil
 }
-

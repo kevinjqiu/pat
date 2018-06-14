@@ -11,7 +11,7 @@ func TestNewPromRuleTestFromFile(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "Test HTTP Requests too low alert", promRuleTest.Name)
 	assert.Equal(t, "rules.yaml", promRuleTest.Rules.FromFile)
-	assert.Equal(t, 2, len(promRuleTest.Fixtures["5m"]))
+	assert.Equal(t, 2, len(promRuleTest.Fixtures[0].Metrics))
 	assert.Equal(t, 2, len(promRuleTest.Assertions))
 }
 
@@ -24,7 +24,7 @@ func TestNewPromRuleTestFromString(t *testing.T) {
 
 	assert.Equal(t, "Test HTTP Requests too low alert", promRuleTest.Name)
 	assert.Equal(t, "rules.yaml", promRuleTest.Rules.FromFile)
-	assert.Equal(t, 2, len(promRuleTest.Fixtures["5m"]))
+	assert.Equal(t, 2, len(promRuleTest.Fixtures[0].Metrics))
 	assert.Equal(t, 2, len(promRuleTest.Assertions))
 }
 
@@ -60,4 +60,33 @@ func TestRuleLoaderNoLoadingStrategySpecified(t *testing.T) {
 	ruleLoader := RuleLoader{}
 	_, err := ruleLoader.Load()
 	assert.NotNil(t, err)
+}
+
+func TestMetricFixturesGeneratePromQLTestInstructions(t *testing.T) {
+	mf := MetricFixtures{
+		DurationMetrics{
+			Duration: "1m",
+			Metrics: []Metric{
+				`http_requests{job="app-server", instance="0", group="canary", severity="overwrite-me"}	75`,
+				`http_requests{job="app-server", instance="1", group="canary", severity="overwrite-me"}	75`,
+			},
+		},
+		DurationMetrics{
+			Duration: "5m",
+			Metrics: []Metric{
+				`http_errors{job="app-server", instance="0", group="canary", severity="overwrite-me"}	75`,
+				`http_errors{job="app-server", instance="1", group="canary", severity="overwrite-me"}	75`,
+			},
+		},
+	}
+
+	instructions, err := mf.generatePromQLTestInstructions()
+	assert.Nil(t, err)
+	assert.Equal(t, `clear
+load 1m
+    http_requests{job="app-server", instance="0", group="canary", severity="overwrite-me"}	75
+    http_requests{job="app-server", instance="1", group="canary", severity="overwrite-me"}	75
+load 5m
+    http_errors{job="app-server", instance="0", group="canary", severity="overwrite-me"}	75
+    http_errors{job="app-server", instance="1", group="canary", severity="overwrite-me"}	75`, instructions)
 }
