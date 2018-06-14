@@ -9,6 +9,7 @@ import (
 	"time"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"fmt"
+	"strings"
 )
 
 type RuleLoader struct {
@@ -27,6 +28,7 @@ func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
 	case ruleLoader.FromFile != "":
 		filename = ruleLoader.FromFile
 		ruleGroups, errs = rulefmt.ParseFile(ruleLoader.FromFile)
+		// TODO: add validation?
 		if len(errs) != 0 {
 			return nil, errs[0] // TODO: multi-error
 		}
@@ -77,6 +79,31 @@ type Metric string
 
 type MetricFixtures map[Duration][]Metric
 
+func (mf MetricFixtures) generatePromQLTestInstructions() (string, error) {
+	instructions := []string{}
+	instructions = append(instructions,"clear")
+
+	for key := range mf {
+		metrics, _ := mf[key]
+		instructions = append(instructions, fmt.Sprintf("load %s", key))
+		for _, metric := range metrics {
+			instructions = append(instructions, fmt.Sprintf("    %s", metric))
+		}
+	}
+
+	return strings.Join(instructions, ""), nil
+}
+
+func (mf MetricFixtures) Load() (*promql.Test, error) {
+	instructions, err := mf.generatePromQLTestInstructions()
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(instructions)
+	return nil, nil
+}
+
 type Assertion struct {
 	At       Instant  `yaml:"at"`
 	Expected []Metric `yaml:"expected"`
@@ -88,6 +115,15 @@ type PromRuleTest struct {
 	Rules      RuleLoader     `yaml:"rules"`
 	Fixtures   MetricFixtures `yaml:"fixtures"`
 	Assertions []Assertion    `yaml:"assertions"`
+}
+
+func (prt PromRuleTest) Run() error {
+	suite, err := prt.Fixtures.Load()
+	if err != nil {
+		return err
+	}
+	fmt.Println(suite)
+	return nil
 }
 
 func FromFile(filepath string) (PromRuleTest, error) {
@@ -112,3 +148,4 @@ func FromString(fileContent []byte) (PromRuleTest, error) {
 	}
 	return promRuleTest, nil
 }
+
