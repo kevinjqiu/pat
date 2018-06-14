@@ -21,6 +21,7 @@ type MetricFixtures map[Duration][]Metric
 type Assertion struct {
 	At       Instant  `yaml:"at"`
 	Expected []Metric `yaml:"expected"`
+	Comment  string   `yaml:"comment,omitempty"`
 }
 
 type PromRuleTest struct {

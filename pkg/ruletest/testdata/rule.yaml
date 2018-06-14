@@ -1,0 +1,8 @@
+groups:
+  - name: prometheus.rules
+    rules:
+      - alert: HTTPRequestRateLow
+        expr: http_requests{group="canary", job="app-server"} < 100
+        for: 1m
+        labels:
+          severity: critical
