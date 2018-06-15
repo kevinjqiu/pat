@@ -76,5 +76,5 @@ $ ./pat -test.v test/test.yaml
 === RUN   Test_HTTP_Requests_too_low_alert_0
 --- PASS: Test_HTTP_Requests_too_low_alert_0 (0.00s)
 === RUN   Test_HTTP_Requests_too_low_alert_1
-=== PASS: Test_HTTP_Requests_too_low_alert_1 (0.00s)
+--- PASS: Test_HTTP_Requests_too_low_alert_1 (0.00s)
 ```
