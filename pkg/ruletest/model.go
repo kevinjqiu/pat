@@ -11,13 +11,18 @@ import (
 	"fmt"
 	"strings"
 	"log"
+	"path"
+	"path/filepath"
 )
+
+const FilenameInline = "__inline__"
 
 type StubTestCase struct{}
 
 func (stc StubTestCase) Fatal(args ...interface{}) {
 	log.Fatal(args)
 }
+
 func (stc StubTestCase) Fatalf(format string, args ...interface{}) {
 	log.Fatalf(format, args)
 }
@@ -25,6 +30,14 @@ func (stc StubTestCase) Fatalf(format string, args ...interface{}) {
 type RuleLoader struct {
 	FromFile    string `yaml:"fromFile,omitempty"`
 	FromLiteral string `yaml:"fromLiteral,omitempty"`
+	BaseDir     string
+}
+
+func (ruleLoader RuleLoader) getRuleFilePath() string {
+	if path.IsAbs(ruleLoader.FromFile) {
+		return ruleLoader.FromFile
+	}
+	return path.Join(ruleLoader.BaseDir, ruleLoader.FromFile)
 }
 
 func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
@@ -37,13 +50,13 @@ func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
 	switch {
 	case ruleLoader.FromFile != "":
 		filename = ruleLoader.FromFile
-		ruleGroups, errs = rulefmt.ParseFile(ruleLoader.FromFile)
-		// TODO: add validation?
+		ruleGroups, errs = rulefmt.ParseFile(ruleLoader.getRuleFilePath())
 		if len(errs) != 0 {
 			return nil, errs[0] // TODO: multi-error
 		}
+		// TODO: add validation?
 	case ruleLoader.FromLiteral != "":
-		filename = "__inline__"
+		filename = FilenameInline
 		ruleGroups, errs = rulefmt.Parse([]byte(ruleLoader.FromLiteral))
 		if len(errs) != 0 {
 			return nil, errs[0]
@@ -139,6 +152,7 @@ type PromRuleTest struct {
 	Rules      RuleLoader     `yaml:"rules"`
 	Fixtures   MetricFixtures `yaml:"fixtures"`
 	Assertions []Assertion    `yaml:"assertions"`
+	Filename   string
 }
 
 func (prt PromRuleTest) Run() error {
@@ -154,6 +168,7 @@ func (prt PromRuleTest) Run() error {
 
 	baseTime := time.Unix(0, 0)
 	for _, assertion := range prt.Assertions {
+		fmt.Println(assertion)
 		duration, err := assertion.At.ToDuration()
 		if err != nil {
 			return err
@@ -161,13 +176,14 @@ func (prt PromRuleTest) Run() error {
 		evalTime := baseTime.Add(duration)
 		for _, grp := range grps {
 			for _, rule := range grp.Rules() {
+				//fmt.Println(rule)
 				res, err := rule.Eval(suite.Context(), evalTime, rules.EngineQueryFunc(suite.QueryEngine(), suite.Storage()), nil)
 				if err != nil {
 					return err
 				}
 				// TODO: parse results
 				fmt.Print(res)
-				fmt.Println(err)
+				//fmt.Println(err)
 			}
 		}
 	}
@@ -175,18 +191,28 @@ func (prt PromRuleTest) Run() error {
 	return nil
 }
 
-func FromFile(filepath string) (PromRuleTest, error) {
-	_, err := os.Stat(filepath)
+func FromFile(filename string) (PromRuleTest, error) {
+	_, err := os.Stat(filename)
 	if err != nil {
 		return PromRuleTest{}, err
 	}
 
-	content, err := ioutil.ReadFile(filepath)
+	content, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return PromRuleTest{}, err
 	}
 
-	return FromString(content)
+	promRuleTest, err := FromString(content)
+	if err != nil {
+		return promRuleTest, err
+	}
+	promRuleTest.Filename = filename
+	absFilePath, err := filepath.Abs(filename)
+	if err != nil {
+		return PromRuleTest{}, err
+	}
+	promRuleTest.Rules.BaseDir = filepath.Dir(absFilePath)
+	return promRuleTest, err
 }
 
 func FromString(fileContent []byte) (PromRuleTest, error) {
@@ -195,5 +221,7 @@ func FromString(fileContent []byte) (PromRuleTest, error) {
 	if err != nil {
 		return promRuleTest, err
 	}
+	promRuleTest.Filename = FilenameInline
+	promRuleTest.Rules.BaseDir = "/"
 	return promRuleTest, nil
 }
