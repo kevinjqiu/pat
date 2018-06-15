@@ -6,10 +6,7 @@ import (
 	"path/filepath"
 	"os"
 	"flag"
-	"fmt"
-	"os/exec"
-	"encoding/json"
-	"encoding/base64"
+	pat "github.com/kevinjqiu/pat/pkg"
 )
 
 const EnvVarTestFilePathsB64 = "TEST_FILE_PATHS_B64"
@@ -40,48 +37,19 @@ func collectTestFiles(globPatterns []string) ([]string, error) {
 	return filePaths, err
 }
 
-func encodeTestFilePaths(testFiles []string) (string, error) {
-	jsonBody, err := json.Marshal(testFiles)
-	if err != nil {
-		return "", err
-	}
-	return base64.StdEncoding.EncodeToString(jsonBody), err
-}
-
-func decodeTestFilePaths(encodedTestFilePaths string) ([]string, error) {
-	jsonBody, err := base64.StdEncoding.DecodeString(encodedTestFilePaths)
-	if err != nil {
-		return []string{}, err
-	}
-
-	var filePaths []string
-	err = json.Unmarshal(jsonBody, &filePaths)
-
-	if err != nil {
-		return []string{}, err
-	}
-	return filePaths, nil
-}
-
 func main() {
 	flag.Parse()
 	testFiles, err := collectTestFiles(flag.Args())
 
-	encodedTestFilePaths, err := encodeTestFilePaths(testFiles)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cmd := exec.Command("go", "test")
-
-	cmd.Env = append(os.Environ(), fmt.Sprintf("%s=%s", EnvVarTestFilePathsB64, encodedTestFilePaths))
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Start()
-
-	err = cmd.Wait()
-	if err != nil {
-		log.Fatal(err)
+	for _, testFile := range testFiles {
+		prt, err := pat.NewPromRuleTestFromFile(testFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		prt.Run()
 	}
 }
