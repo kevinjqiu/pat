@@ -1,9 +1,10 @@
 package pkg
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetTestCaseName(t *testing.T) {
@@ -35,3 +36,46 @@ func TestNewPromRuleTestFromString(t *testing.T) {
 	assert.Equal(t, FilenameInline, promRuleTest.filename)
 }
 
+func TestAssertAlertsEqual(t *testing.T) {
+	testCases := []struct{
+		expected []Alert
+		actual   []map[string]string
+		comment  string
+	}{
+		{
+			expected: []Alert{
+				{"alertname": "FOO", "alertstate": "pending"},
+			},
+			actual: []map[string]string{
+				{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending"},
+			},
+			comment: "Single alert should work",
+		},
+		{
+			expected: []Alert{
+				{"alertname": "FOO", "alertstate": "pending", "instance": "0"},
+				{"alertname": "FOO", "alertstate": "pending", "instance": "1"},
+			},
+			actual: []map[string]string{
+				{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending", "instance": "0"},
+				{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending", "instance": "1"},
+			},
+			comment: "Multiple alerts of the same order should work",
+		},
+		{
+			expected: []Alert{
+				{"alertname": "FOO", "alertstate": "pending", "instance": "0"},
+				{"alertname": "FOO", "alertstate": "pending", "instance": "1"},
+			},
+			actual: []map[string]string{
+				{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending", "instance": "1"},
+				{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending", "instance": "0"},
+			},
+			comment: "Multiple alerts of the different order should also work",
+		},
+	}
+
+	for _, tc := range testCases {
+		assert.True(t, assertAlertsEqual(t, tc.expected, tc.actual), tc.comment)
+	}
+}

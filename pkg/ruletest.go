@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"regexp"
 	"log"
+	"sort"
 )
 
 func (prt PromRuleTest) evalRuleGroupAtInstant(suite *promql.Test, grps []*rules.Group, evalTime time.Time) ([]map[string]string, error) {
@@ -75,7 +76,7 @@ func (prt PromRuleTest) newTestCase(idx int, assertion Assertion, resultAlerts [
 		Name: prt.getTestCaseName(idx),
 		F: func(t *testing.T) {
 			assert.Equal(t, len(assertion.Expected), len(resultAlerts), "Alert count does not match expected")
-			assertMapSliceEqual(t, assertion.Expected, resultAlerts)
+			assertAlertsEqual(t, assertion.Expected, resultAlerts)
 		},
 	}
 }
@@ -116,10 +117,59 @@ func NewPromRuleTestFromString(fileContent []byte) (PromRuleTest, error) {
 	return promRuleTest, nil
 }
 
-func assertMapSliceEqual(t *testing.T, expected, actual []map[string]string) {
+func sortedKeys(m map[string]string) []string {
+	var keys []string
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func alertLessThan(a, b map[string]string) bool {
+	aKeys := sortedKeys(a)
+	bKeys := sortedKeys(b)
+
+	if len(aKeys) < len(bKeys) {
+		return true
+	}
+	if len(aKeys) > len(bKeys) {
+		return false
+	}
+
+	for _, aKey := range aKeys {
+		for _, bKey := range bKeys {
+			if aKey < bKey {
+				return true
+			}
+			if aKey > bKey {
+				return false
+			}
+			aVal := a[aKey]
+			bVal := b[bKey]
+			if aVal <= bVal {
+				return true
+			}
+			return false
+		}
+	}
+	return false
+}
+
+func assertAlertsEqual(t *testing.T, expected, actual []map[string]string) bool {
 	// Add __name__ attribute to the expected map
 	for _, e:= range expected {
 		e["__name__"] = "ALERTS"
 	}
-	assert.EqualValues(t, expected, actual)
+
+	sort.SliceStable(expected, func(i, j int) bool {
+		return alertLessThan(expected[i], expected[j])
+	});
+
+	// TODO: investigate why sorting `actual` always produce a reversed order
+	sort.SliceStable(actual, func(i, j int) bool {
+		return alertLessThan(actual[i], actual[j])
+	});
+
+	return assert.EqualValues(t, expected, actual)
 }

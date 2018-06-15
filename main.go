@@ -1,15 +1,14 @@
 package main
 
 import (
-	"github.com/hashicorp/go-multierror"
-	"log"
-	"path/filepath"
-	"os"
 	"flag"
+	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/hashicorp/go-multierror"
 	pat "github.com/kevinjqiu/pat/pkg"
 )
-
-const EnvVarTestFilePathsB64 = "TEST_FILE_PATHS_B64"
 
 func collectTestFiles(globPatterns []string) ([]string, error) {
 	if len(globPatterns) == 0 {
@@ -17,7 +16,7 @@ func collectTestFiles(globPatterns []string) ([]string, error) {
 	}
 
 	var (
-		err error
+		err       error
 		filePaths []string
 	)
 
