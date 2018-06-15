@@ -23,7 +23,6 @@ func (prt PromRuleTest) Run() error {
 
 	baseTime := time.Unix(0, 0)
 	for _, assertion := range prt.Assertions {
-		fmt.Println(assertion)
 		duration, err := assertion.At.ToDuration()
 		if err != nil {
 			return err
@@ -31,18 +30,17 @@ func (prt PromRuleTest) Run() error {
 		evalTime := baseTime.Add(duration)
 		for _, grp := range grps {
 			for _, rule := range grp.Rules() {
-				//fmt.Println(rule)
 				res, err := rule.Eval(suite.Context(), evalTime, rules.EngineQueryFunc(suite.QueryEngine(), suite.Storage()), nil)
 				if err != nil {
 					return err
 				}
-				// TODO: parse results
-				fmt.Print(res)
-				//fmt.Println(err)
+
+				if len(res) != len(assertion.Expected) {
+					return fmt.Errorf("")
+				}
 			}
 		}
 	}
-	fmt.Println(suite)
 	return nil
 }
 

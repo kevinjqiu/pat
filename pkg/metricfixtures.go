@@ -30,5 +30,10 @@ func (mf MetricFixtures) Load() (*promql.Test, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = suite.Run()
+	if err != nil {
+		return nil, err
+	}
 	return suite, nil
 }
