@@ -36,6 +36,23 @@ func TestNewPromRuleTestFromString(t *testing.T) {
 	assert.Equal(t, FilenameInline, promRuleTest.filename)
 }
 
+func TestAlertLessThan(t *testing.T) {
+	alerts := []map[string]string{
+		{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending", "instance": "1"},
+		{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending", "instance": "0"},
+	}
+	assert.False(t, alertLessThan(alerts[0], alerts[1]))
+	assert.True(t, alertLessThan(alerts[1], alerts[0]))
+
+	alerts = []Alert{
+		{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending", "instance": "0"},
+		{"__name__": "ALERTS", "alertname": "FOO", "alertstate": "pending", "instance": "1"},
+	}
+
+	assert.False(t, alertLessThan(alerts[1], alerts[0]))
+	assert.True(t, alertLessThan(alerts[0], alerts[1]))
+}
+
 func TestAssertAlertsEqual(t *testing.T) {
 	testCases := []struct{
 		expected []Alert

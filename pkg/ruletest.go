@@ -137,22 +137,23 @@ func alertLessThan(a, b map[string]string) bool {
 		return false
 	}
 
-	for _, aKey := range aKeys {
-		for _, bKey := range bKeys {
-			if aKey < bKey {
-				return true
-			}
-			if aKey > bKey {
-				return false
-			}
-			aVal := a[aKey]
-			bVal := b[bKey]
-			if aVal <= bVal {
-				return true
-			}
+	for i, _ := range aKeys {
+		aKey := aKeys[i]
+		bKey := bKeys[i]
+
+		if aKey < bKey {
+			return true
+		}
+		if aKey > bKey {
 			return false
 		}
+		aVal := a[aKey]
+		bVal := b[bKey]
+		if aVal < bVal {
+			return true
+		}
 	}
+
 	return false
 }
 
@@ -166,7 +167,6 @@ func assertAlertsEqual(t *testing.T, expected, actual []map[string]string) bool 
 		return alertLessThan(expected[i], expected[j])
 	});
 
-	// TODO: investigate why sorting `actual` always produce a reversed order
 	sort.SliceStable(actual, func(i, j int) bool {
 		return alertLessThan(actual[i], actual[j])
 	});
