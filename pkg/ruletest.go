@@ -33,7 +33,7 @@ func (prt PromRuleTest) evalRuleGroupAtInstant(suite *promql.Test, grps []*rules
 	return retval, nil
 }
 
-func (prt PromRuleTest) generateTestCases() ([]TestCase, error) {
+func (prt PromRuleTest) GenerateTestCases() ([]TestCase, error) {
 	var tests []TestCase
 	suite, err := prt.Fixtures.Load()
 	if err != nil {
@@ -78,15 +78,6 @@ func (prt PromRuleTest) newTestCase(idx int, assertion Assertion, resultAlerts [
 			assertMapSliceEqual(t, assertion.Expected, resultAlerts)
 		},
 	}
-}
-
-func (prt PromRuleTest) Run() (bool, error) {
-	testcases, err := prt.generateTestCases()
-	if err != nil {
-		return false, err
-	}
-	ok := prt.testRunner.RunTests(testcases)
-	return ok, nil
 }
 
 func NewPromRuleTestFromFile(filename string) (PromRuleTest, error) {

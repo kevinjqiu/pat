@@ -35,10 +35,3 @@ func TestNewPromRuleTestFromString(t *testing.T) {
 	assert.Equal(t, FilenameInline, promRuleTest.filename)
 }
 
-func TestPromRuleTestRun(t *testing.T) {
-	promRuleTest, err := NewPromRuleTestFromFile("testdata/test.yaml")
-	assert.Nil(t, err)
-	ok, err := promRuleTest.Run()
-	assert.Nil(t, err)
-	assert.True(t, ok)
-}

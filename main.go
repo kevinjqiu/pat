@@ -45,11 +45,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	allTestCases := []pat.TestCase{}
 	for _, testFile := range testFiles {
 		prt, err := pat.NewPromRuleTestFromFile(testFile)
 		if err != nil {
 			log.Fatal(err)
 		}
-		prt.Run()
+
+		testCasesForFile, err := prt.GenerateTestCases()
+		for _, tc := range testCasesForFile {
+			allTestCases = append(allTestCases, tc)
+		}
 	}
+
+	testRunner := pat.GoTestRunner{}
+	testRunner.RunTests(allTestCases)
 }

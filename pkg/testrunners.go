@@ -8,12 +8,12 @@ type TestCase struct {
 }
 
 type TestRunner interface {
-	RunTests([]TestCase) bool
+	RunTests([]TestCase)
 }
 
 type GoTestRunner struct{}
 
-func (gtr GoTestRunner) RunTests(tc []TestCase) bool {
+func (gtr GoTestRunner) RunTests(tc []TestCase) {
 	// convert TestCases to testing.InternalTest
 	testcases := []testing.InternalTest{}
 	for _, test := range tc {
@@ -23,5 +23,5 @@ func (gtr GoTestRunner) RunTests(tc []TestCase) bool {
 		})
 	}
 
-	return testing.RunTests(func(pat, str string) (bool, error) { return true, nil }, testcases)
+	testing.Main(func(pat, str string) (bool, error) { return true, nil }, testcases, nil, nil)
 }
