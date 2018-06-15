@@ -9,15 +9,14 @@ import (
 	"gopkg.in/yaml.v2"
 	"github.com/prometheus/prometheus/promql"
 	"fmt"
-	"sort"
-	"github.com/prometheus/prometheus/pkg/labels"
 	"testing"
 	"github.com/stretchr/testify/assert"
+	"regexp"
+	"log"
 )
 
 func (prt PromRuleTest) evalRuleGroupAtInstant(suite *promql.Test, grps []*rules.Group, evalTime time.Time) ([]map[string]string, error) {
 	var retval []map[string]string
-	var metrics []labels.Labels
 
 	for _, grp := range grps {
 		for _, rule := range grp.Rules() {
@@ -27,19 +26,10 @@ func (prt PromRuleTest) evalRuleGroupAtInstant(suite *promql.Test, grps []*rules
 			}
 
 			for _, res := range results {
-				metrics = append(metrics, res.Metric)
+				retval = append(retval, res.Metric.Map())
 			}
 		}
 	}
-
-	sort.Slice(metrics, func(i, j int) bool {
-		return labels.Compare(metrics[i], metrics[j]) < 0
-	})
-
-	for _, m := range metrics {
-		retval = append(retval, m.Map())
-	}
-
 	return retval, nil
 }
 
@@ -66,17 +56,28 @@ func (prt PromRuleTest) generateTestCases() ([]TestCase, error) {
 		if err != nil {
 			return tests, err
 		}
-		fmt.Println(resultAlertMetrics)
-
-		tests = append(tests, TestCase{
-			Name: fmt.Sprintf("Test%d", i),
-			F: func(t *testing.T) {
-				assert.Equal(t, 1, 1)
-			},
-		})
+		tests = append(tests, prt.newTestCase(i, assertion, resultAlertMetrics))
 	}
 
 	return tests, nil
+}
+
+func (prt PromRuleTest) getTestCaseName(assertionIdx int) string {
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return fmt.Sprintf("%s_%d", reg.ReplaceAllString(prt.Name, "_"), assertionIdx)
+}
+
+func (prt PromRuleTest) newTestCase(idx int, assertion Assertion, resultAlerts []map[string]string) TestCase {
+	return TestCase{
+		Name: prt.getTestCaseName(idx),
+		F: func(t *testing.T) {
+			assert.Equal(t, len(assertion.Expected), len(resultAlerts), "Alert count does not match expected")
+			assertMapSliceEqual(t, assertion.Expected, resultAlerts)
+		},
+	}
 }
 
 func (prt PromRuleTest) Run() (bool, error) {
@@ -122,4 +123,12 @@ func NewPromRuleTestFromString(fileContent []byte) (PromRuleTest, error) {
 	promRuleTest.Rules.BaseDir = "/"
 	promRuleTest.testRunner = GoTestRunner{}
 	return promRuleTest, nil
+}
+
+func assertMapSliceEqual(t *testing.T, expected, actual []map[string]string) {
+	// Add __name__ attribute to the expected map
+	for _, e:= range expected {
+		e["__name__"] = "ALERTS"
+	}
+	assert.EqualValues(t, expected, actual)
 }

@@ -6,6 +6,11 @@ import (
 	"io/ioutil"
 )
 
+func TestGetTestCaseName(t *testing.T) {
+	prt := PromRuleTest{Name: "Test HTTP Requests too low alert"}
+	assert.Equal(t, "Test_HTTP_Requests_too_low_alert_1", prt.getTestCaseName(1))
+}
+
 func TestNewPromRuleTestFromFile(t *testing.T) {
 	promRuleTest, err := NewPromRuleTestFromFile("testdata/test.yaml")
 	assert.Nil(t, err)

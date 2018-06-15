@@ -3,7 +3,6 @@ package pkg
 import (
 	"log"
 	"time"
-	"testing"
 )
 
 const FilenameInline = "__inline__"
@@ -25,12 +24,12 @@ type RuleLoader struct {
 }
 
 type Assertion struct {
-	At       Instant  `yaml:"at"`
-	Expected []Alert  `yaml:"expected"`
-	Comment  string   `yaml:"comment,omitempty"`
+	At       Instant `yaml:"at"`
+	Expected []Alert `yaml:"expected"`
+	Comment  string  `yaml:"comment,omitempty"`
 }
 
-type Alert map[string]string
+type Alert = map[string]string
 
 type PromRuleTest struct {
 	Name       string         `yaml:"name"`
@@ -42,6 +41,7 @@ type PromRuleTest struct {
 }
 
 type Instant string
+
 func (i Instant) ToDuration() (time.Duration, error) {
 	duration, err := time.ParseDuration(string(i))
 	if err != nil {
@@ -50,9 +50,9 @@ func (i Instant) ToDuration() (time.Duration, error) {
 	return duration, nil
 }
 
-type Duration string
+type Duration = string
 
-type Metric string
+type Metric = string
 
 type DurationMetricsFixture struct {
 	Duration Duration `yaml:"duration"`
@@ -60,26 +60,3 @@ type DurationMetricsFixture struct {
 }
 
 type MetricFixtures []DurationMetricsFixture
-
-type TestCase struct {
-	Name string
-	F func(*testing.T)
-}
-
-type TestRunner interface {
-	RunTests([]TestCase) bool
-}
-
-type GoTestRunner struct {}
-func (gtr GoTestRunner) RunTests(tc []TestCase) bool {
-	// convert TestCases to testing.InternalTest
-	testcases := []testing.InternalTest{}
-	for _, test := range tc {
-		testcases = append(testcases, testing.InternalTest{
-			Name: test.Name,
-			F: test.F,
-		})
-	}
-
-	return testing.RunTests(func(pat, str string) (bool, error) { return true, nil }, testcases)
-}
