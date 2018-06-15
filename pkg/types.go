@@ -25,9 +25,11 @@ type RuleLoader struct {
 
 type Assertion struct {
 	At       Instant  `yaml:"at"`
-	Expected []Metric `yaml:"expected"`
+	Expected []Alert  `yaml:"expected"`
 	Comment  string   `yaml:"comment,omitempty"`
 }
+
+type Alert map[string]string
 
 type PromRuleTest struct {
 	Name       string         `yaml:"name"`
@@ -50,10 +52,10 @@ type Duration string
 
 type Metric string
 
-type DurationMetrics struct {
+type DurationMetricsFixture struct {
 	Duration Duration `yaml:"duration"`
 	Metrics  []Metric `yaml:"metrics"`
 }
 
-type MetricFixtures []DurationMetrics
+type MetricFixtures []DurationMetricsFixture
 

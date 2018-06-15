@@ -2,13 +2,33 @@ package pkg
 
 import (
 	"time"
-	"fmt"
 	"github.com/prometheus/prometheus/rules"
 	"os"
 	"io/ioutil"
 	"path/filepath"
 	"gopkg.in/yaml.v2"
+	"github.com/prometheus/prometheus/promql"
+	"fmt"
+	"github.com/stretchr/testify/assert"
 )
+
+func (prt PromRuleTest) evalRuleGroupAtInstant(suite *promql.Test, grps []*rules.Group, evalTime time.Time) ([]map[string]string, error) {
+	var retval []map[string]string
+	for _, grp := range grps {
+		for _, rule := range grp.Rules() {
+			results, err := rule.Eval(suite.Context(), evalTime, rules.EngineQueryFunc(suite.QueryEngine(), suite.Storage()), nil)
+			if err != nil {
+				return retval, err
+			}
+
+			for _, res := range results {
+				retval = append(retval, res.Metric.Map())
+			}
+		}
+	}
+
+	return retval, nil
+}
 
 func (prt PromRuleTest) Run() error {
 	suite, err := prt.Fixtures.Load()
@@ -28,18 +48,12 @@ func (prt PromRuleTest) Run() error {
 			return err
 		}
 		evalTime := baseTime.Add(duration)
-		for _, grp := range grps {
-			for _, rule := range grp.Rules() {
-				res, err := rule.Eval(suite.Context(), evalTime, rules.EngineQueryFunc(suite.QueryEngine(), suite.Storage()), nil)
-				if err != nil {
-					return err
-				}
-
-				if len(res) != len(assertion.Expected) {
-					return fmt.Errorf("")
-				}
-			}
+		resultAlertMetrics, err := prt.evalRuleGroupAtInstant(suite, grps, evalTime)
+		if err != nil {
+			return err
 		}
+		fmt.Println(resultAlertMetrics)
+		assert.Contains()
 	}
 	return nil
 }

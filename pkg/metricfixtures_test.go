@@ -7,14 +7,14 @@ import (
 
 func TestMetricFixturesGeneratePromQLTestInstructions(t *testing.T) {
 	mf := MetricFixtures{
-		DurationMetrics{
+		DurationMetricsFixture{
 			Duration: "1m",
 			Metrics: []Metric{
 				`http_requests{job="app-server", instance="0", group="canary", severity="overwrite-me"}	75`,
 				`http_requests{job="app-server", instance="1", group="canary", severity="overwrite-me"}	75`,
 			},
 		},
-		DurationMetrics{
+		DurationMetricsFixture{
 			Duration: "5m",
 			Metrics: []Metric{
 				`http_errors{job="app-server", instance="0", group="canary", severity="overwrite-me"}	75`,
