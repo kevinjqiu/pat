@@ -9,6 +9,8 @@
 
 Prometheus Alert Testing tool
 
+[![CircleCI](https://circleci.com/gh/kevinjqiu/pat.svg?style=svg)](https://circleci.com/gh/kevinjqiu/pat)
+
 Build & Install
 ===============
 
