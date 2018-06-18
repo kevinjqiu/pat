@@ -9,14 +9,30 @@
 
 Prometheus Alert Testing tool
 
+Build & Install
+===============
+
+  go get github.com/kevinjqiu/pat
+
+You must have golang 1.10 and [`dep`](https://github.com/golang/dep) installed.
+
+Build from source
+-----------------
+
+Check out this repo to $GOPATH/src/github.com/kevinjqiu/pat
+
+and then:
+
+  cd $GOPATH/src/github.com/kevinjqiu/pat && make build
+
 Usage
 =====
 
-    pat [options] <test_yaml_file_glob>
+  pat [options] <test_yaml_file_glob>
 
 e.g.,
 
-    pat test/*.yaml
+  pat test/*.yaml
 
 Test File Format
 ================
