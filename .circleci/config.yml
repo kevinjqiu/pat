@@ -2,11 +2,11 @@ version: 2
 jobs:
   build:
     working_directory: /go/src/github.com/kevinjqiu/pat
-  docker:
-    - image: circleci/golang:1.10
-  steps:
-    - checkout
-    - run:
-        name: Run unit tests
-        command: |
-          make test
+    docker:
+      - image: circleci/golang:1.10
+    steps:
+      - checkout
+      - run:
+          name: Run unit tests
+          command: |
+            make test
