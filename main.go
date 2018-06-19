@@ -39,6 +39,7 @@ func collectTestFiles(globPatterns []string) ([]string, error) {
 
 func main() {
 	fs := flag.NewFlagSet("pat", flag.ContinueOnError)
+	flag.Set("test.v", "true")
 	err := fs.Parse(os.Args)
 	if err != nil {
 		log.Fatal(err)
