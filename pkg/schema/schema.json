@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "Rules": {
+      "oneOf": [
+        {
+          "properties": {
+            "fromFile": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "fromFile"
+          ]
+        },
+        {
+          "properties": {
+            "fromLiteral": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "fromLiteral"
+          ]
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "assertions": {},
+    "fixtures": {},
+    "name": {
+      "type": "string"
+    },
+    "rules": {
+      "$ref": "#/definitions/Rules"
+    }
+  },
+  "required": [
+    "name",
+    "rules",
+    "assertions"
+  ],
+  "title": "pat - Prometheus Alert Testing utility",
+  "type": "object"
+}

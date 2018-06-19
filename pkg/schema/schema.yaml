@@ -1,0 +1,29 @@
+$schema: http://json-schema.org/draft-04/schema#
+title: pat - Prometheus Alert Testing utility
+type: object
+properties:
+  name:
+    type: string
+  rules:
+    $ref: "#/definitions/Rules"
+  fixtures: {}
+  assertions: {}
+required:
+  - name
+  - rules
+  - assertions
+additionalProperties: false
+definitions:
+  Rules:
+    type: object
+    oneOf:
+      - properties:
+          fromFile:
+            type: string
+        required:
+          - fromFile
+      - properties:
+          fromLiteral:
+            type: string
+        required:
+          - fromLiteral

@@ -11,7 +11,7 @@ func TestRuleLoaderFromFile(t *testing.T) {
 	currentDir, err := filepath.Abs(".")
 	assert.Nil(t, err)
 
-	ruleLoader := RuleLoader{FromFile: "testdata/rules.yaml", BaseDir: currentDir}
+	ruleLoader := RuleLoader{FromFile: "testdata/rules.yaml", baseDir: currentDir}
 
 	ruleGroups, err := ruleLoader.Load()
 	assert.Nil(t, err)

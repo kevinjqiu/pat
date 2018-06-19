@@ -1,7 +1,13 @@
 .PHONY: test
 
-test:
+test: generate
 	go test -cover -v github.com/kevinjqiu/pat/pkg/...
 
-build:
+build: generate
 	go build -o pat
+
+generate: schema
+	cd pkg && go-bindata -pkg pkg schema
+
+schema:
+	cd pkg/schema && yaml2json < schema.yaml | jq . > schema.json
