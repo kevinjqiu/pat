@@ -35,7 +35,7 @@ definitions:
     properties:
       duration:
         type: string
-        pattern: "^\d+(ns|us|ms|s|m|h)$"
+        pattern: "^\\d+(ns|us|ms|s|m|h)$"
       metrics:
         type: array
         items:

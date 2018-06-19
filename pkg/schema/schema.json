@@ -2,6 +2,25 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "additionalProperties": false,
   "definitions": {
+    "Fixture": {
+      "properties": {
+        "duration": {
+          "pattern": "^\\d+(ns|us|ms|s|m|h)$",
+          "type": "string"
+        },
+        "metrics": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "duration",
+        "metrics"
+      ],
+      "type": "object"
+    },
     "Rules": {
       "oneOf": [
         {
@@ -30,7 +49,12 @@
   },
   "properties": {
     "assertions": {},
-    "fixtures": {},
+    "fixtures": {
+      "items": {
+        "$ref": "#/definitions/Fixture"
+      },
+      "type": "array"
+    },
     "name": {
       "type": "string"
     },
