@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	pat "github.com/kevinjqiu/pat/pkg"
+	"fmt"
 )
 
 func collectTestFiles(globPatterns []string) ([]string, error) {
@@ -37,14 +38,19 @@ func collectTestFiles(globPatterns []string) ([]string, error) {
 }
 
 func main() {
-	flag.Parse()
-	testFiles, err := collectTestFiles(flag.Args())
+	fs := flag.NewFlagSet("pat", flag.ContinueOnError)
+	err := fs.Parse(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	testFiles, err := collectTestFiles(fs.Args()[1:])
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	allTestCases := []pat.TestCase{}
+	var allTestCases []pat.TestCase
 	for _, testFile := range testFiles {
 		prt, err := pat.NewPromRuleTestFromFile(testFile)
 		if err != nil {
@@ -57,6 +63,11 @@ func main() {
 		}
 	}
 
+	if len(allTestCases) == 0 {
+		fmt.Println("WARNING: No tests discovered. Exiting...")
+		os.Exit(0)
+	}
+
 	testRunner := pat.GoTestRunner{}
-	testRunner.RunTests(allTestCases)
+	os.Exit(testRunner.RunTests(allTestCases))
 }
