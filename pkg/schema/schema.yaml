@@ -6,8 +6,11 @@ properties:
     type: string
   rules:
     $ref: "#/definitions/Rules"
-  fixtures: {}
-  assertions: {}
+  fixtures:
+    type: array
+    items:
+      $ref: "#/definitions/Fixture"
+  assertions: {}  # TODO
 required:
   - name
   - rules
@@ -27,3 +30,16 @@ definitions:
             type: string
         required:
           - fromLiteral
+  Fixture:
+    type: object
+    properties:
+      duration:
+        type: string
+        pattern: "^\d+(ns|us|ms|s|m|h)$"
+      metrics:
+        type: array
+        items:
+          type: string
+    required:
+      - duration
+      - metrics
