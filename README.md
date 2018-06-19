@@ -16,7 +16,7 @@ Build & Install
 
     go get github.com/kevinjqiu/pat
 
-You must have golang 1.10 and [`dep`](https://github.com/golang/dep) installed.
+You must have golang 1.9 and [`dep`](https://github.com/golang/dep) installed.
 
 Build from source
 -----------------
@@ -198,7 +198,7 @@ assertions:
 Run the test:
 
 ```bash
-$ ./pat -test.v test/test.yaml 
+$ ./pat test/test.yaml
 === RUN   Test_HTTP_Requests_too_low_alert_0
 --- PASS: Test_HTTP_Requests_too_low_alert_0 (0.00s)
 === RUN   Test_HTTP_Requests_too_low_alert_1
