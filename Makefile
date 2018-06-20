@@ -7,10 +7,10 @@ build: generate
 	go build -o pat
 
 generate: bindata schema
-	cd pkg && go-bindata -pkg pkg schema
+	cd pkg && $(GOPATH)/bin/go-bindata -pkg pkg schema
 
 schema: yaml2json
-	cd pkg/schema && yaml2json < schema.yaml | jq . > schema.json
+	cd pkg/schema && $(GOPATH)/bin/yaml2json < schema.yaml | jq . > schema.json
 
 bindata:
 	go get -u github.com/jteeuwen/go-bindata
