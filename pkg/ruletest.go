@@ -14,7 +14,19 @@ import (
 	"regexp"
 	"log"
 	"sort"
+	"github.com/xeipuuv/gojsonschema"
+	"github.com/hashicorp/go-multierror"
 )
+
+var jsonSchemaLoader gojsonschema.JSONLoader
+
+func init() {
+	asset, err := Asset("schema/schema.json")
+	if err != nil {
+		panic(err)
+	}
+	jsonSchemaLoader = gojsonschema.NewBytesLoader(asset)
+}
 
 func (prt PromRuleTest) evalRuleGroupAtInstant(suite *promql.Test, grps []*rules.Group, evalTime time.Time) ([]map[string]string, error) {
 	var retval []map[string]string
@@ -81,6 +93,25 @@ func (prt PromRuleTest) newTestCase(idx int, assertion Assertion, resultAlerts [
 	}
 }
 
+func (prt PromRuleTest) validateJSONSchema() error {
+	documentLoader := gojsonschema.NewGoLoader(prt)
+
+	res, err := gojsonschema.Validate(jsonSchemaLoader, documentLoader)
+	if err != nil {
+		return err
+	}
+
+	if res.Valid() {
+		return nil
+	}
+
+	var multiErr error
+	for _, e := range res.Errors() {
+		multiErr = multierror.Append(multiErr, fmt.Errorf("validation error: %s, field=%s, value=%s", e.Description(), e.Field(), e.Value()))
+	}
+	return multiErr
+}
+
 func NewPromRuleTestFromFile(filename string) (PromRuleTest, error) {
 	_, err := os.Stat(filename)
 	if err != nil {
@@ -101,7 +132,7 @@ func NewPromRuleTestFromFile(filename string) (PromRuleTest, error) {
 	if err != nil {
 		return PromRuleTest{}, err
 	}
-	promRuleTest.Rules.BaseDir = filepath.Dir(absFilePath)
+	promRuleTest.Rules.baseDir = filepath.Dir(absFilePath)
 	return promRuleTest, err
 }
 
@@ -111,8 +142,14 @@ func NewPromRuleTestFromString(fileContent []byte) (PromRuleTest, error) {
 	if err != nil {
 		return promRuleTest, err
 	}
+
+	err = promRuleTest.validateJSONSchema()
+	if err != nil {
+		return promRuleTest, err
+	}
+
 	promRuleTest.filename = FilenameInline
-	promRuleTest.Rules.BaseDir = "/"
+	promRuleTest.Rules.baseDir = "/"
 	promRuleTest.testRunner = GoTestRunner{}
 	return promRuleTest, nil
 }

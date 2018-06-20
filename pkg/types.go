@@ -18,24 +18,24 @@ func (stc StubTestCase) Fatalf(format string, args ...interface{}) {
 }
 
 type RuleLoader struct {
-	FromFile    string `yaml:"fromFile,omitempty"`
-	FromLiteral string `yaml:"fromLiteral,omitempty"`
-	BaseDir     string
+	FromFile    string `yaml:"fromFile,omitempty" json:"fromFile,omitempty"`
+	FromLiteral string `yaml:"fromLiteral,omitempty" json:"fromLiteral,omitempty"`
+	baseDir     string
 }
 
 type Assertion struct {
-	At       Instant `yaml:"at"`
-	Expected []Alert `yaml:"expected"`
-	Comment  string  `yaml:"comment,omitempty"`
+	At       Instant `yaml:"at" json:"at"`
+	Expected []Alert `yaml:"expected" json:"expected"`
+	Comment  string  `yaml:"comment,omitempty" json:"comment,omitempty"`
 }
 
 type Alert = map[string]string
 
 type PromRuleTest struct {
-	Name       string         `yaml:"name"`
-	Rules      RuleLoader     `yaml:"rules"`
-	Fixtures   MetricFixtures `yaml:"fixtures"`
-	Assertions []Assertion    `yaml:"assertions"`
+	Name       string         `yaml:"name" json:"name"`
+	Rules      RuleLoader     `yaml:"rules" json:"rules"`
+	Fixtures   MetricFixtures `yaml:"fixtures" json:"fixtures"`
+	Assertions []Assertion    `yaml:"assertions" json:"assertions"`
 	filename   string
 	testRunner TestRunner
 }
@@ -55,8 +55,8 @@ type Duration = string
 type Metric = string
 
 type DurationMetricsFixture struct {
-	Duration Duration `yaml:"duration"`
-	Metrics  []Metric `yaml:"metrics"`
+	Duration Duration `yaml:"duration" json:"duration"`
+	Metrics  []Metric `yaml:"metrics" json:"metrics"`
 }
 
 type MetricFixtures []DurationMetricsFixture

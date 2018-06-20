@@ -25,6 +25,8 @@ func (f matcher) StopCPUProfile()                             {}
 func (f matcher) WriteHeapProfile(w io.Writer) error          { return errMain }
 func (f matcher) WriteProfileTo(string, io.Writer, int) error { return errMain }
 func (f matcher) ImportPath() string                          { return "" }
+func (f matcher) StartTestLog(io.Writer)                      {}
+func (f matcher) StopTestLog() error                          { return errMain }
 
 func (gtr GoTestRunner) RunTests(tc []TestCase) int {
 	// convert TestCases to testing.InternalTest

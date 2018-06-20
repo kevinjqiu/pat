@@ -14,7 +14,7 @@ func (ruleLoader RuleLoader) getRuleFilePath() string {
 	if path.IsAbs(ruleLoader.FromFile) {
 		return ruleLoader.FromFile
 	}
-	return path.Join(ruleLoader.BaseDir, ruleLoader.FromFile)
+	return path.Join(ruleLoader.baseDir, ruleLoader.FromFile)
 }
 
 func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {

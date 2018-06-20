@@ -16,7 +16,7 @@ Build & Install
 
     go get github.com/kevinjqiu/pat
 
-You must have golang 1.9 and [`dep`](https://github.com/golang/dep) installed.
+You must have golang 1.9+ and [`dep`](https://github.com/golang/dep) installed.
 
 Build from source
 -----------------

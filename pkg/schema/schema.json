@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "Assertion": {
+      "properties": {
+        "at": {
+          "$ref": "#/definitions/Duration"
+        },
+        "expected": {
+          "items": {
+            "$ref": "#/definitions/Expectation"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "Duration": {
+      "pattern": "^\\d+(ns|us|ms|s|m|h)$",
+      "type": "string"
+    },
+    "Expectation": {
+      "type": "object"
+    },
+    "Fixture": {
+      "properties": {
+        "duration": {
+          "$ref": "#/definitions/Duration"
+        },
+        "metrics": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "duration",
+        "metrics"
+      ],
+      "type": "object"
+    },
+    "Rules": {
+      "oneOf": [
+        {
+          "properties": {
+            "fromFile": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "fromFile"
+          ]
+        },
+        {
+          "properties": {
+            "fromLiteral": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "fromLiteral"
+          ]
+        }
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "assertions": {
+      "items": {
+        "$ref": "#/definitions/Assertion"
+      },
+      "type": "array"
+    },
+    "fixtures": {
+      "items": {
+        "$ref": "#/definitions/Fixture"
+      },
+      "type": "array"
+    },
+    "name": {
+      "type": "string"
+    },
+    "rules": {
+      "$ref": "#/definitions/Rules"
+    }
+  },
+  "required": [
+    "name",
+    "rules",
+    "assertions"
+  ],
+  "title": "pat - Prometheus Alert Testing utility",
+  "type": "object"
+}
