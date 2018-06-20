@@ -8,8 +8,19 @@ import (
 )
 
 func TestGetTestCaseName(t *testing.T) {
-	prt := PromRuleTest{Name: "Test HTTP Requests too low alert"}
-	assert.Equal(t, "Test_HTTP_Requests_too_low_alert_1", prt.getTestCaseName(1))
+	prt := PromRuleTest{
+		Name: "Test HTTP Requests too low alert",
+		Assertions: []Assertion{
+			{
+				At: "5m",
+			},
+			{
+				At: "10m",
+			},
+		},
+	}
+	assert.Equal(t, "Test_HTTP_Requests_too_low_alert_at_5m", prt.getTestCaseName(0))
+	assert.Equal(t, "Test_HTTP_Requests_too_low_alert_at_10m", prt.getTestCaseName(1))
 }
 
 func TestNewPromRuleTestFromFile(t *testing.T) {

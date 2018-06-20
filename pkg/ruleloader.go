@@ -44,7 +44,7 @@ func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
 		return nil, fmt.Errorf("Must specify a rule loading strategy")
 	}
 
-	retval := []*rules.Group{}
+	var retval []*rules.Group
 	for _, rg := range ruleGroups.Groups {
 		rls := make([]rules.Rule, 0, len(rg.Rules))
 		for _, r := range rg.Rules {

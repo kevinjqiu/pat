@@ -21,6 +21,8 @@ assertions:
         instance: "1"
         job: app-server
         severity: critical
+    comment: |-
+      At 0m, the alerts met the threshold but has not met the duration requirement. Expect the alert to be pending
   - at: 5m
     expected:
       - alertname: HTTPRequestRateLow
@@ -35,3 +37,5 @@ assertions:
         instance: "1"
         job: app-server
         severity: critical
+    comment: |-
+      At 5m, the alerts should be firing because the duration requirement is met.
