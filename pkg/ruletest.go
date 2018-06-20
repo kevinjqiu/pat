@@ -107,7 +107,7 @@ func (prt PromRuleTest) validateJSONSchema() error {
 
 	var multiErr error
 	for _, e := range res.Errors() {
-		multiErr = multierror.Append(multiErr, fmt.Errorf("Validation error: msg=%s, field=%s, value=%s", e.Description(), e.Field(), e.Value()))
+		multiErr = multierror.Append(multiErr, fmt.Errorf("validation error: %s, field=%s, value=%s", e.Description(), e.Field(), e.Value()))
 	}
 	return multiErr
 }

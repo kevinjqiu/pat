@@ -10,7 +10,10 @@ properties:
     type: array
     items:
       $ref: "#/definitions/Fixture"
-  assertions: {}  # TODO
+  assertions:
+    type: array
+    items:
+      $ref: "#/definitions/Assertion"
 required:
   - name
   - rules
@@ -34,8 +37,7 @@ definitions:
     type: object
     properties:
       duration:
-        type: string
-        pattern: "^\\d+(ns|us|ms|s|m|h)$"
+        $ref: "#/definitions/Duration"
       metrics:
         type: array
         items:
@@ -43,3 +45,17 @@ definitions:
     required:
       - duration
       - metrics
+  Assertion:
+    type: object
+    properties:
+      at:
+        $ref: "#/definitions/Duration"
+      expected:
+        type: array
+        items:
+          $ref: "#/definitions/Expectation"
+  Duration:
+    type: string
+    pattern: "^\\d+(ns|us|ms|s|m|h)$"
+  Expectation:
+    type: object
