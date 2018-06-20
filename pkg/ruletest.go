@@ -80,7 +80,8 @@ func (prt PromRuleTest) getTestCaseName(assertionIdx int) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return fmt.Sprintf("%s_%d", reg.ReplaceAllString(prt.Name, "_"), assertionIdx)
+	assertion := prt.Assertions[assertionIdx]
+	return fmt.Sprintf("%s_at_%s", reg.ReplaceAllString(prt.Name, "_"), assertion.At)
 }
 
 func (prt PromRuleTest) newTestCase(idx int, assertion Assertion, resultAlerts []map[string]string) TestCase {

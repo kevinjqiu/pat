@@ -45,9 +45,9 @@ Top level attributes
 --------------------
 
 * `name` - The name of the test case
-* [`rules`](#Rules) - The rule definitions that are under test
-* [`fixtures`](#Fixtures) - The fixture setup for the tests
-* [`assertions`](#Assertions) - The test assertions
+* [`rules`](#rules) - The rule definitions that are under test
+* [`fixtures`](#fixtures) - The fixture setup for the tests
+* [`assertions`](#assertions) - The test assertions
 
 Rules
 -----
@@ -198,9 +198,10 @@ assertions:
 Run the test:
 
 ```bash
-$ ./pat test/test.yaml
-=== RUN   Test_HTTP_Requests_too_low_alert_0
---- PASS: Test_HTTP_Requests_too_low_alert_0 (0.00s)
-=== RUN   Test_HTTP_Requests_too_low_alert_1
---- PASS: Test_HTTP_Requests_too_low_alert_1 (0.00s)
+$ ./pat examples/test.yaml
+=== RUN   Test_HTTP_Requests_too_low_alert_at_0m
+--- PASS: Test_HTTP_Requests_too_low_alert_at_0m (0.00s)
+=== RUN   Test_HTTP_Requests_too_low_alert_at_5m
+--- PASS: Test_HTTP_Requests_too_low_alert_at_5m (0.00s)
+PASS
 ```

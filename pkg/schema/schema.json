@@ -3,9 +3,13 @@
   "additionalProperties": false,
   "definitions": {
     "Assertion": {
+      "additionalProperties": false,
       "properties": {
         "at": {
           "$ref": "#/definitions/Duration"
+        },
+        "comment": {
+          "type": "string"
         },
         "expected": {
           "items": {
@@ -14,6 +18,10 @@
           "type": "array"
         }
       },
+      "required": [
+        "at",
+        "expected"
+      ],
       "type": "object"
     },
     "Duration": {

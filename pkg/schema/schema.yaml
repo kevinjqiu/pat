@@ -54,6 +54,12 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Expectation"
+      comment:
+        type: string
+    required:
+      - at
+      - expected
+    additionalProperties: false
   Duration:
     type: string
     pattern: "^\\d+(ns|us|ms|s|m|h)$"
