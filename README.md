@@ -39,7 +39,7 @@ e.g.,
 Test File Format
 ================
 
-Test files are written in yaml format.
+Test files are written in yaml format. For a complete schema definition (in jsonschema format), see [here](https://github.com/kevinjqiu/pat/blob/master/pkg/schema/schema.yaml).
 
 Top level attributes
 --------------------
