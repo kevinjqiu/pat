@@ -13,7 +13,7 @@ schema: yaml2json
 	cd pkg/schema && $(GOPATH)/bin/yaml2json < schema.yaml | jq . > schema.json
 
 bindata:
-	go get -u github.com/go-bindata/go-bindata
+	go get -u github.com/go-bindata/go-bindata/...
 
 yaml2json:
 	go get -u github.com/bronze1man/yaml2json
