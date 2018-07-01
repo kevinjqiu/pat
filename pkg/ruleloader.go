@@ -8,6 +8,8 @@ import (
 	"github.com/prometheus/prometheus/promql"
 	"time"
 	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/go-kit/kit/log"
+	"os"
 )
 
 func (ruleLoader RuleLoader) getRuleFilePath() string {
@@ -20,9 +22,12 @@ func (ruleLoader RuleLoader) getRuleFilePath() string {
 func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
 	var (
 		ruleGroups *rulefmt.RuleGroups
-		errs []error
-		filename string
+		errs       []error
+		filename   string
+		logger     log.Logger
 	)
+
+	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 
 	switch {
 	case ruleLoader.FromFile != "":
@@ -60,7 +65,7 @@ func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
 					time.Duration(r.For),
 					labels.FromMap(r.Labels),
 					labels.FromMap(r.Annotations),
-					nil,    // TODO: stub logger
+					logger,
 				)
 				rls = append(rls, rule)
 			}
