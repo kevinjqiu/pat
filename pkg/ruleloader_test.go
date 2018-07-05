@@ -19,8 +19,9 @@ func TestRuleLoaderFromFile(t *testing.T) {
 	assert.Equal(t, 1, len(ruleGroups))
 	assert.Equal(t, "prometheus.rules", ruleGroups[0].Name())
 	assert.Equal(t, "testdata/rules.yaml", ruleGroups[0].File())
-	assert.Equal(t, 1, len(ruleGroups[0].Rules()))
+	assert.Equal(t, 2, len(ruleGroups[0].Rules()))
 	assert.Equal(t, "HTTPRequestRateLow", ruleGroups[0].Rules()[0].Name())
+	assert.Equal(t, "httprequestratelow_record", ruleGroups[0].Rules()[1].Name())
 }
 
 func TestRuleLoaderFromLiteral(t *testing.T) {
@@ -34,8 +35,9 @@ func TestRuleLoaderFromLiteral(t *testing.T) {
 	assert.Equal(t, 1, len(ruleGroups))
 	assert.Equal(t, "prometheus.rules", ruleGroups[0].Name())
 	assert.Equal(t, "__inline__", ruleGroups[0].File())
-	assert.Equal(t, 1, len(ruleGroups[0].Rules()))
+	assert.Equal(t, 2, len(ruleGroups[0].Rules()))
 	assert.Equal(t, "HTTPRequestRateLow", ruleGroups[0].Rules()[0].Name())
+	assert.Equal(t, "httprequestratelow_record", ruleGroups[0].Rules()[1].Name())
 }
 
 func TestRuleLoaderNoLoadingStrategySpecified(t *testing.T) {

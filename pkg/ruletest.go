@@ -197,8 +197,10 @@ func alertLessThan(a, b map[string]string) bool {
 
 func assertAlertsEqual(t *testing.T, expected, actual []map[string]string) bool {
 	// Add __name__ attribute to the expected map
-	for _, e:= range expected {
-		e["__name__"] = "ALERTS"
+	for _, e := range expected {
+		if _, ok := e["__name__"]; !ok {
+			e["__name__"] = "ALERTS"
+		}
 	}
 
 	sort.SliceStable(expected, func(i, j int) bool {
