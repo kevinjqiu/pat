@@ -54,6 +54,9 @@ func run(testFileGlobs []string) error {
 		}
 
 		testCasesForFile, err := prt.GenerateTestCases()
+		if err != nil {
+			log.Fatal(err)
+		}
 		for _, tc := range testCasesForFile {
 			allTestCases = append(allTestCases, tc)
 		}
