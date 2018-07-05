@@ -101,6 +101,15 @@ func TestAssertAlertsEqual(t *testing.T) {
 			},
 			comment: "Multiple alerts of the different order should also work",
 		},
+		{
+			expected: []Alert{
+				{"foo": "bar", "__name__": "superalert"},
+			},
+			actual: []map[string]string{
+				{"foo": "bar", "__name__": "superalert"},
+			},
+			comment: "If __name__ is specified by the user, do not override it",
+		},
 	}
 
 	for _, tc := range testCases {
