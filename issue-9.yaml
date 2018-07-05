@@ -1,0 +1,36 @@
+name: test
+rules:
+  fromFile: examples/rules.yaml
+fixtures:
+  - duration: 5m
+    metrics:
+      - ingress_controller_ssl_expire_time_seconds{host="expired.domain",instance="10.202.8.83:10254",job="kubernetes-pods",namespace="ingress-nginx",pod_name="ingress-nginx-internal-controller-fb7c6bbbb-9nvbj",pod_template_hash="963726666",purpose="ingress-nginx"} 0 -10 -20
+assertions:
+  - at: 5m
+    expected:
+      - alertname: SSLCertExpiry
+        alertstate: pending
+        severity: warning
+        host: expiringsoon.domain
+      - alertname: SSLCertExpiry
+        alertstate: pending
+        severity: warning
+        host: expired.domain
+      - alertname: SSLCertExpired
+        alertstate: pending
+        severity: critical
+        host: expired.domain
+  - at: 15m
+    expected:
+      - alertname: SSLCertExpiry
+        alertstate: firing
+        severity: warning
+        host: expiringsoon.domain
+      - alertname: SSLCertExpiry
+        alertstate: firing
+        severity: warning
+        host: expired.domain
+      - alertname: SSLCertExpired
+        alertstate: firing
+        severity: critical
+        host: expired.domain
