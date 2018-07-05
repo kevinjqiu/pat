@@ -6,3 +6,5 @@ groups:
         for: 1m
         labels:
           severity: critical
+      - record: httprequestratelow_record
+        expr: http_requests{group="canary", job="app-server"} < 100
