@@ -58,8 +58,9 @@ func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
 				return nil, err
 			}
 
+			var rule rules.Rule
 			if r.Alert != "" {
-				rule := rules.NewAlertingRule(
+				rule = rules.NewAlertingRule(
 					r.Alert,
 					expr,
 					time.Duration(r.For),
@@ -67,8 +68,15 @@ func (ruleLoader RuleLoader) Load() ([]*rules.Group, error) {
 					labels.FromMap(r.Annotations),
 					logger,
 				)
-				rls = append(rls, rule)
 			}
+			if r.Record != "" {
+				rule = rules.NewRecordingRule(
+					r.Record,
+					expr,
+					labels.FromMap(r.Labels),
+				)
+			}
+			rls = append(rls, rule)
 		}
 		group := rules.NewGroup(rg.Name, filename, time.Duration(rg.Interval), rls, &rules.ManagerOptions{})
 		retval = append(retval, group)
