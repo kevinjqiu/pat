@@ -21,7 +21,10 @@
 
 [[projects]]
   name = "github.com/go-kit/kit"
-  packages = ["log","log/level"]
+  packages = [
+    "log",
+    "log/level"
+  ]
   revision = "ca4112baa34cb55091301bdc13b1420a122b1b9e"
   version = "v0.7.0"
 
@@ -81,7 +84,10 @@
 
 [[projects]]
   name = "github.com/opentracing/opentracing-go"
-  packages = [".","log"]
+  packages = [
+    ".",
+    "log"
+  ]
   revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
   version = "v1.0.2"
 
@@ -112,26 +118,56 @@
 [[projects]]
   branch = "master"
   name = "github.com/prometheus/common"
-  packages = ["expfmt","internal/bitbucket.org/ww/goautoneg","model"]
+  packages = [
+    "expfmt",
+    "internal/bitbucket.org/ww/goautoneg",
+    "model"
+  ]
   revision = "7600349dcfe1abd18d72d3a1770870d9800a7801"
 
 [[projects]]
   branch = "master"
   name = "github.com/prometheus/procfs"
-  packages = [".","internal/util","nfs","xfs"]
-  revision = "7d6f385de8bea29190f15ba9931442a0eaef9af7"
+  packages = [
+    ".",
+    "internal/util",
+    "nfs",
+    "xfs"
+  ]
+  revision = "ae68e2d4c00fed4943b5f6698d504a5fe083da8a"
 
 [[projects]]
   name = "github.com/prometheus/prometheus"
-  packages = ["pkg/labels","pkg/rulefmt","pkg/textparse","pkg/timestamp","pkg/value","promql","rules","storage","storage/tsdb","template","util/stats","util/strutil","util/testutil"]
-  revision = "290d71791a507a5057b9a099c9d48703d86dc941"
-  version = "v2.3.0"
+  packages = [
+    "pkg/labels",
+    "pkg/rulefmt",
+    "pkg/textparse",
+    "pkg/timestamp",
+    "pkg/value",
+    "promql",
+    "rules",
+    "storage",
+    "storage/tsdb",
+    "template",
+    "util/stats",
+    "util/strutil",
+    "util/testutil"
+  ]
+  revision = "188ca45bd85ce843071e768d855722a9d9dabe03"
+  version = "v2.3.1"
 
 [[projects]]
   branch = "master"
   name = "github.com/prometheus/tsdb"
-  packages = [".","chunkenc","chunks","fileutil","index","labels"]
-  revision = "c848349f07c83bd38d5d19faa5ea71c7fd8923ea"
+  packages = [
+    ".",
+    "chunkenc",
+    "chunks",
+    "fileutil",
+    "index",
+    "labels"
+  ]
+  revision = "77db94c07e63d258d63a2a42eb0d384a01093223"
 
 [[projects]]
   name = "github.com/spf13/cobra"
@@ -173,7 +209,7 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "db08ff08e8622530d9ed3a0e8ac279f6d4c02196"
+  revision = "7d20a46f6beace81a30952deb544117e269111e0"
 
 [[projects]]
   branch = "master"
@@ -185,7 +221,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "8883426083c04a2627e6e59d84d5f6fb63d16c91"
+  revision = "151529c776cdc58ddbe7963ba9af779f3577b419"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
@@ -196,6 +232,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ade7bd70854151a135fce73411d5af6a80c54e38aead2ede7cb54408fd6a453a"
+  inputs-digest = "675c297cfdd984b4c14469a9057f236e08a4465facf52a3273eb0bfd43455f46"
   solver-name = "gps-cdcl"
   solver-version = 1
