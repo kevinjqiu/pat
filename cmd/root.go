@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strconv"
 
 	"errors"
 	"flag"
@@ -81,7 +80,7 @@ var RootCmd = &cobra.Command{
 	Short: "Prometheus Alert Testing utility",
 	Run: func(cmd *cobra.Command, args []string) {
 		if code, err := run(args); err != nil {
-			fmt.Printf("exited with %s", strconv.Itoa(code))
+			fmt.Printf("exited with %d", code)
 			os.Exit(code)
 		}
 	},
