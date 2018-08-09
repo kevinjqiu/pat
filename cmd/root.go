@@ -80,7 +80,8 @@ var RootCmd = &cobra.Command{
 	Short: "Prometheus Alert Testing utility",
 	Run: func(cmd *cobra.Command, args []string) {
 		if code, err := run(args); err != nil {
-			fmt.Printf("exited with %d", code)
+			fmt.Println(err.Error())
+			fmt.Printf("exited %d", code)
 			os.Exit(code)
 		}
 	},
