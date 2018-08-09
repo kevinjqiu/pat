@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
-	"path/filepath"
-	"github.com/hashicorp/go-multierror"
-	"log"
-	pat "github.com/kevinjqiu/pat/pkg"
 	"errors"
 	"flag"
+	"github.com/hashicorp/go-multierror"
+	pat "github.com/kevinjqiu/pat/pkg"
+	"github.com/spf13/cobra"
+	"path/filepath"
 )
 
 func collectTestFiles(globPatterns []string) ([]string, error) {
@@ -39,23 +38,23 @@ func collectTestFiles(globPatterns []string) ([]string, error) {
 	return filePaths, err
 }
 
-func run(testFileGlobs []string) error {
+func run(testFileGlobs []string) (int, error) {
 	flag.Set("test.v", "1")
 	testFiles, err := collectTestFiles(testFileGlobs)
 	if err != nil {
-		log.Fatal(err)
+		return 1, err
 	}
 
 	var allTestCases []pat.TestCase
 	for _, testFile := range testFiles {
 		prt, err := pat.NewPromRuleTestFromFile(testFile)
 		if err != nil {
-			log.Fatal(err)
+			return 1, err
 		}
 
 		testCasesForFile, err := prt.GenerateTestCases()
 		if err != nil {
-			log.Fatal(err)
+			return 1, err
 		}
 		for _, tc := range testCasesForFile {
 			allTestCases = append(allTestCases, tc)
@@ -64,15 +63,15 @@ func run(testFileGlobs []string) error {
 
 	if len(allTestCases) == 0 {
 		fmt.Println("WARNING: No tests discovered. Exiting...")
-		return nil
+		return 0, err
 	}
 
 	testRunner := pat.GoTestRunner{}
 	retCode := testRunner.RunTests(allTestCases)
 	if retCode != 0 {
-		return errors.New("Bad return code from test")
+		return retCode, errors.New("Bad return code from test")
 	}
-	return nil
+	return 0, nil
 }
 
 // RootCmd represents the base command when called without any subcommands
@@ -80,7 +79,10 @@ var RootCmd = &cobra.Command{
 	Use:   "pat <test-file-globs...>",
 	Short: "Prometheus Alert Testing utility",
 	Run: func(cmd *cobra.Command, args []string) {
-		run(args)
+		if code, err := run(args); err != nil {
+			fmt.Printf("exited with %d", code)
+			os.Exit(code)
+		}
 	},
 	Args: cobra.MinimumNArgs(1),
 }
@@ -93,4 +95,3 @@ func Execute() {
 		os.Exit(-1)
 	}
 }
-
