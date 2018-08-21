@@ -136,9 +136,11 @@ assertions:
         alertstate: firing
         job: app-server
         severity: critical
+  - at: 10m
+    expected: []
 ```
 
-In this example, we're asserting that when the alert rules are evaluated at `0m`, with the given fixtures, we should get `HTTPRequestRateLow` alert in `pending` state, and when evaluated at `5m`, the alert should be in `firing` state.
+In this example, we're asserting that when the alert rules are evaluated at `0m`, with the given fixtures, we should get `HTTPRequestRateLow` alert in `pending` state, and when evaluated at `5m`, the alert should be in `firing` state. When evaluated at `10m`, we shouldn't get any alert.
 
 A Complete Example
 ==================
@@ -182,6 +184,8 @@ assertions:
         instance: "1"
         job: app-server
         severity: critical
+    comment: |-
+      At 0m, the alerts met the threshold but has not met the duration requirement. Expect the alert to be pending
   - at: 5m
     expected:
       - alertname: HTTPRequestRateLow
@@ -196,6 +200,22 @@ assertions:
         instance: "1"
         job: app-server
         severity: critical
+    comment: |-
+      At 5m, the alerts should be firing because the duration requirement is met.
+  - at: 10m
+    expected:
+      - alertname: HTTPRequestRateLow
+        alertstate: firing
+        group: canary
+        instance: "0"
+        job: app-server
+        severity: critical
+    comment: |-
+      At 10m, the alert should be firing only for instance 0 because instance 1 is >= 100.
+  - at: 15m
+    expected: []
+    comment: |-
+      At 15m, both instances are back to normal, therefore we expect no alert.
 ```
 
 Run the test:
