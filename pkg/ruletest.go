@@ -29,7 +29,7 @@ func init() {
 }
 
 func (prt PromRuleTest) evalRuleGroupAtInstant(suite *promql.Test, grps []*rules.Group, evalTime time.Time) ([]map[string]string, error) {
-	var retval []map[string]string
+	retval := make([]map[string]string, 0)
 
 	for _, grp := range grps {
 		for _, rule := range grp.Rules() {
