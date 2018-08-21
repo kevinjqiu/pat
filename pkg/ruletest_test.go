@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/prometheus/prometheus/rules"
+	"time"
 )
 
 func TestGetTestCaseName(t *testing.T) {
@@ -29,7 +31,8 @@ func TestNewPromRuleTestFromFile(t *testing.T) {
 	assert.Equal(t, "Test HTTP Requests too low alert", promRuleTest.Name)
 	assert.Equal(t, "rules.yaml", promRuleTest.Rules.FromFile)
 	assert.Equal(t, 2, len(promRuleTest.Fixtures[0].Metrics))
-	assert.Equal(t, 2, len(promRuleTest.Assertions))
+	assert.Equal(t, 3, len(promRuleTest.Assertions))
+	assert.Equal(t, []Alert{}, promRuleTest.Assertions[2].Expected)
 	assert.Equal(t, "testdata/test.yaml", promRuleTest.filename)
 }
 
@@ -43,7 +46,8 @@ func TestNewPromRuleTestFromString(t *testing.T) {
 	assert.Equal(t, "Test HTTP Requests too low alert", promRuleTest.Name)
 	assert.Equal(t, "rules.yaml", promRuleTest.Rules.FromFile)
 	assert.Equal(t, 2, len(promRuleTest.Fixtures[0].Metrics))
-	assert.Equal(t, 2, len(promRuleTest.Assertions))
+	assert.Equal(t, 3, len(promRuleTest.Assertions))
+	assert.Equal(t, []Alert{}, promRuleTest.Assertions[2].Expected)
 	assert.Equal(t, FilenameInline, promRuleTest.filename)
 }
 
@@ -115,4 +119,12 @@ func TestAssertAlertsEqual(t *testing.T) {
 	for _, tc := range testCases {
 		assert.True(t, assertAlertsEqual(t, tc.expected, tc.actual), tc.comment)
 	}
+}
+
+func TestEvalRuleGroupAtInstantWithNoAlert(t *testing.T) {
+	prt := PromRuleTest{}
+	noAlerts, err := prt.evalRuleGroupAtInstant(nil, []*rules.Group{}, time.Now())
+
+	assert.Nil(t, err)
+	assert.Equal(t, []Alert{}, noAlerts)
 }

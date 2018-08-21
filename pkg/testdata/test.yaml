@@ -35,3 +35,5 @@ assertions:
         instance: "1"
         job: app-server
         severity: critical
+  - at: 10m
+    expected: []
