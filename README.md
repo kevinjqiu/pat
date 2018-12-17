@@ -72,7 +72,7 @@ or
 
 ```yaml
 rules:
-  fromLteral: |-
+  fromLiteral: |-
     groups:
       - name: prometheus.rules
         rules:
